@@ -16,6 +16,10 @@ class ProjectController extends Controller
 
     public function show(Project $project)
     {
+        if (!auth()->user()->is($project->owner)) {
+            abort(403);
+        }
+
         return view('projects.show', compact('project'));
     }
 

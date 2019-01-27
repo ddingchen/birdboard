@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Project;
+use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -16,5 +17,12 @@ class ProjectTest extends TestCase
         $project = factory(Project::class)->create();
 
         $this->assertEquals('projects/' . $project->id, $project->path());
+    }
+
+    public function test_it_belongs_to_an_owner()
+    {
+        $project = factory(Project::class)->create();
+        
+        $this->assertInstanceOf(User::class, $project->owner);
     }
 }

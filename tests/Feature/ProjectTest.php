@@ -30,19 +30,6 @@ class ProjectTest extends TestCase
         $this->get('/projects')->assertSee($attributes['title']);
     }
 
-    public function test_a_user_can_view_a_project()
-    {
-        $this->withoutExceptionHandling();
-
-        $this->actingAs(factory(User::class)->create());
-
-        $project = factory(Project::class)->create();
-
-        $this->get('projects/' . $project->id)
-            ->assertSee($project->title)
-            ->assertSee($project->description);
-    }
-
     public function test_a_project_requires_a_title()
     {
         $project = factory(Project::class)->raw(['title' => '']);
@@ -63,9 +50,41 @@ class ProjectTest extends TestCase
             ->assertSessionHasErrors('description');
     }
 
-    public function test_only_authenticated_users_can_create_projects()
+    public function test_a_user_can_view_a_project()
+    {
+        $project = factory(Project::class)->create();
+
+        $this->actingAs($project->owner);
+
+        $this->get('projects/' . $project->id)
+            ->assertSee($project->title)
+            ->assertSee($project->description);
+    }
+
+    public function test_an_authenticated_user_canoot_view_projects_of_others()
+    {
+        $this->be(factory(User::class)->create());
+
+        $project = factory(Project::class)->create();
+
+        $this->get($project->path())->assertStatus(403);
+    }
+
+    public function test_guests_may_not_create_projects()
     {
         $this->post('projects', factory(Project::class)->raw())
             ->assertRedirect('login');
+    }
+
+    public function test_guests_may_not_view_projects()
+    {
+        $this->get('projects')->assertRedirect('login');
+    }
+
+    public function test_guests_may_not_view_a_single_project()
+    {
+        $project = factory(Project::class)->create();
+
+        $this->get('projects/' . $project->id)->assertRedirect('login');
     }
 }
