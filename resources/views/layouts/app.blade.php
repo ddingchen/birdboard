@@ -24,8 +24,8 @@
         <nav class="bg-white">
             <div class="container mx-auto">
                <div class="flex justify-between py-3 items-center">
-                   <a class="navbar-brand" href="{{ url('/') }}">
-                       {{ config('app.name', 'Laravel') }}
+                   <a class="navbar-brand flex items-center" href="{{ url('/') }}">
+                       <img src="/full-logo.png" alt="{{ config('app.name', 'Laravel') }}">
                    </a>
                    
                    <div>
