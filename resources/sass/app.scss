@@ -41,8 +41,12 @@
  */
 
 .button {
-    @apply .bg-blue .text-white .no-underline .rounded-lg .text-sm .py-2 .px-5;
+    @apply .bg-blue .text-white .no-underline .rounded .text-sm .py-2 .px-5;
     box-shadow: 0 2px 7px 0 #B0EAFF;
+}
+
+.card {
+    @apply .bg-white .rounded .shadow .p-5;
 }
 
 /**
