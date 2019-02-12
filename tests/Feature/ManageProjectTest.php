@@ -16,7 +16,7 @@ class ManageProjectTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $this->actingAs(factory(User::class)->create());
+        $this->signIn();
 
         $this->get('projects/create')->assertStatus(200);
 
@@ -36,7 +36,7 @@ class ManageProjectTest extends TestCase
     {
         $project = factory(Project::class)->raw(['title' => '']);
 
-        $this->actingAs(factory(User::class)->create());
+        $this->signIn();
 
         $this->post('projects', $project)
             ->assertSessionHasErrors('title');
@@ -46,7 +46,7 @@ class ManageProjectTest extends TestCase
     {
         $project = factory(Project::class)->raw(['description' => '']);
 
-        $this->actingAs(factory(User::class)->create());
+        $this->signIn();
 
         $this->post('projects', $project)
             ->assertSessionHasErrors('description');
@@ -56,7 +56,7 @@ class ManageProjectTest extends TestCase
     {
         $project = factory(Project::class)->create();
 
-        $this->actingAs($project->owner);
+        $this->signIn($project->owner);
 
         $this->get('projects/' . $project->id)
             ->assertSee($project->title)
@@ -65,7 +65,7 @@ class ManageProjectTest extends TestCase
 
     public function test_an_authenticated_user_canoot_view_projects_of_others()
     {
-        $this->be(factory(User::class)->create());
+        $this->signIn();
 
         $project = factory(Project::class)->create();
 

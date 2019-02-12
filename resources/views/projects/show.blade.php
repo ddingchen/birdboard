@@ -12,9 +12,9 @@
             <div class="lg:w-3/4 px-3">
                 <div class="mb-6">
                     <h2 class="text-lg text-grey font-normal mb-3">Tasks</h2>
-                    <div class="card mb-3">Lefwe wef</div>
-                    <div class="card mb-3">Lefwe wef</div>
-                    <div class="card mb-3">Lefwe wef</div>
+                    @foreach($project->tasks as $task)
+                    <div class="card mb-3">{{ $task->body }}</div>
+                    @endforeach
                 </div>
 
                 <div>
