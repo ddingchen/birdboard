@@ -18,5 +18,7 @@ class ProjectTaskController extends Controller
         ]);
 
         $project->addTask(request('body'));
+
+        return redirect($project->path());
     }
 }
