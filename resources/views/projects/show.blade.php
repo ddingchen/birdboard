@@ -13,7 +13,14 @@
                 <div class="mb-6">
                     <h2 class="text-lg text-grey font-normal mb-3">Tasks</h2>
                     @foreach($project->tasks as $task)
-                    <div class="card mb-3">{{ $task->body }}</div>
+                    <form action="{{ $task->path() }}" method="post">
+                        @method('patch')
+                        @csrf
+                        <div class="card mb-3 flex">
+                            <input type="text" name="body" class="mr-auto w-full" value="{{ $task->body }}">
+                            <input type="checkbox" name="completed" onclick="this.form.submit()" {{ $task->completed ? 'checked' : '' }}>
+                        </div>
+                    </form>
                     @endforeach
                     <div class="card mb-3">
                         <form action="{{ $project->path() . '/tasks' }}" method="post">
