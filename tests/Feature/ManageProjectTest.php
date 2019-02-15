@@ -52,6 +52,18 @@ class ManageProjectTest extends TestCase
             ->assertSessionHasErrors('description');
     }
 
+    public function test_a_user_can_only_view_owned_projects_in_list()
+    {
+        $this->signIn();
+
+        $othersProject = factory(Project::class)->create();
+        $ownedProject = auth()->user()->projects()->create(factory(Project::class)->raw());
+
+        $this->get('projects')
+            ->assertSee($ownedProject->title)
+            ->assertDontSee($othersProject->title);
+    }
+
     public function test_a_user_can_view_a_project()
     {
         $project = factory(Project::class)->create();
