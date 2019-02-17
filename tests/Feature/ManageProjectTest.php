@@ -22,7 +22,8 @@ class ManageProjectTest extends TestCase
 
         $attributes = [
             'title' => $this->faker->sentence,
-            'description' => $this->faker->paragraph,
+            'description' => $this->faker->sentence,
+            'notes' => $this->faker->sentence,
         ];
 
         $this->post('projects', $attributes)->assertRedirect();
@@ -82,6 +83,28 @@ class ManageProjectTest extends TestCase
         $project = factory(Project::class)->create();
 
         $this->get($project->path())->assertStatus(403);
+    }
+
+    public function test_a_user_can_update_a_project()
+    {
+        $this->withoutExceptionHandling();
+        $project = factory(Project::class)->create();
+        
+        $this->signIn($project->owner);
+
+        $this->patch($project->path(), ['notes' => $notes = $this->faker->sentence]);
+        
+        $this->get($project->path())
+            ->assertSee($notes);
+    }
+
+    public function test_an_authenticated_user_canoot_update_projects_of_others()
+    {
+        $this->signIn();
+
+        $project = factory(Project::class)->create();
+
+        $this->patch($project->path())->assertStatus(403);
     }
 
     public function test_guests_may_not_manage_projects()

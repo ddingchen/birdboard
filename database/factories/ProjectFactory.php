@@ -7,7 +7,7 @@ use Faker\Generator as Faker;
 $factory->define(Model::class, function (Faker $faker) {
     return [
         'title' => $faker->sentence,
-        'description' => $faker->paragraph,
+        'description' => $faker->sentence,
         'owner_id' => function () {
             return factory(User::class)->create()->id;
         },
