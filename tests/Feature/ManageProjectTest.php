@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Project;
-use App\User;
+use Facades\Tests\Setup\ProjectFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -55,62 +55,61 @@ class ManageProjectTest extends TestCase
 
     public function test_a_user_can_only_view_owned_projects_in_list()
     {
-        $this->signIn();
+        $othersProject = ProjectFactory::create();
+        $ownedProject = ProjectFactory::create();
 
-        $othersProject = factory(Project::class)->create();
-        $ownedProject = auth()->user()->projects()->create(factory(Project::class)->raw());
-
-        $this->get('projects')
+        $this->signIn($ownedProject->owner)
+            ->get('projects')
             ->assertSee($ownedProject->title)
             ->assertDontSee($othersProject->title);
     }
 
     public function test_a_user_can_view_a_project()
     {
-        $project = factory(Project::class)->create();
+        $project = ProjectFactory::create();
 
-        $this->signIn($project->owner);
-
-        $this->get('projects/' . $project->id)
+        $this->signIn($project->owner)
+            ->get($project->path())
             ->assertSee($project->title)
             ->assertSee($project->description);
     }
 
     public function test_an_authenticated_user_canoot_view_projects_of_others()
     {
-        $this->signIn();
+        $project = ProjectFactory::create();
 
-        $project = factory(Project::class)->create();
-
-        $this->get($project->path())->assertStatus(403);
+        $this->signIn()
+            ->get($project->path())
+            ->assertStatus(403);
     }
 
     public function test_a_user_can_update_a_project()
     {
-        $this->withoutExceptionHandling();
-        $project = factory(Project::class)->create();
-        
-        $this->signIn($project->owner);
+        $project = ProjectFactory::create();
 
-        $this->patch($project->path(), ['notes' => $notes = $this->faker->sentence]);
-        
-        $this->get($project->path())
-            ->assertSee($notes);
+        $attributes = ['notes' => $notes = $this->faker->sentence];
+
+        $this->signIn($project->owner)
+            ->patch($project->path(), $attributes);
+
+        $this->assertDatabaseHas('projects', $attributes);
     }
 
     public function test_an_authenticated_user_canoot_update_projects_of_others()
     {
-        $this->signIn();
+        $project = ProjectFactory::create();
 
-        $project = factory(Project::class)->create();
-
-        $this->patch($project->path())->assertStatus(403);
+        $this->signIn()
+            ->patch($project->path())
+            ->assertStatus(403);
     }
 
     public function test_guests_may_not_manage_projects()
     {
         $this->get('projects')->assertRedirect('login');
+
         $this->post('projects')->assertRedirect('login');
-        $this->get(factory(Project::class)->create()->path())->assertRedirect('login');
+
+        $this->get(ProjectFactory::create()->path())->assertRedirect('login');
     }
 }
