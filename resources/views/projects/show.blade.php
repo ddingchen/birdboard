@@ -5,6 +5,8 @@
         <div class="mr-auto text-grey text-sm font-normal">
             <a href="/projects" class="text-grey no-underline">My Projects</a> / {{ $project->title }}
         </div>
+
+        <a href="{{ $project->path() . '/edit' }}" class="button">Edit Project</a>
     </header>
 
     <main>

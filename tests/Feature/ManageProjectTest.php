@@ -87,10 +87,16 @@ class ManageProjectTest extends TestCase
     {
         $project = ProjectFactory::create();
 
-        $attributes = ['notes' => $notes = $this->faker->sentence];
+        $attributes = [
+            'title' => $this->faker->sentence,
+            'description' => $this->faker->sentence,
+            'notes' => $notes = $this->faker->sentence
+        ];
 
         $this->signIn($project->owner)
             ->patch($project->path(), $attributes);
+
+        $this->get($project->path() . '/edit')->assertStatus(200);
 
         $this->assertDatabaseHas('projects', $attributes);
     }
