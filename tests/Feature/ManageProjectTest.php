@@ -85,12 +85,13 @@ class ManageProjectTest extends TestCase
 
     public function test_a_user_can_update_a_project()
     {
+        $this->withoutExceptionHandling();
         $project = ProjectFactory::create();
 
         $attributes = [
             'title' => $this->faker->sentence,
             'description' => $this->faker->sentence,
-            'notes' => $notes = $this->faker->sentence
+            'notes' => $notes = $this->faker->sentence,
         ];
 
         $this->signIn($project->owner)

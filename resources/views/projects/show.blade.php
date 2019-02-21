@@ -37,14 +37,22 @@
                     <form action="{{ $project->path() }}" method="post">
                         @csrf
                         @method('patch')
-                        <textarea 
-                            name="notes" 
-                            class="card w-full" 
+                        <textarea
+                            name="notes"
+                            class="card w-full"
                             style="min-height: 200px;"
                         >{{ $project->notes }}</textarea>
                         <button class="button mt-3">Save</button>
                     </form>
                 </div>
+
+                @if($errors->any())
+                    <ul class="mt-3 text-red">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                @endif
             </div>
             <div class="lg:w-1/4 px-3">
                 @include('projects.card')
