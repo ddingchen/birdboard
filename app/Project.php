@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Activity;
 use App\Task;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
@@ -33,5 +34,13 @@ class Project extends Model
     public function addTask($body)
     {
         return $this->tasks()->create(compact('body'));
+    }
+
+    public function recordActivity($type)
+    {
+        Activity::create([
+            'project_id' => $this->id,
+            'description' => $type,
+        ]);
     }
 }

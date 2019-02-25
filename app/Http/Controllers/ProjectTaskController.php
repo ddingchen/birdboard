@@ -28,11 +28,14 @@ class ProjectTaskController extends Controller
         if (auth()->user()->isNot($project->owner)) {
             abort(403);
         }
-        
-        $task->update([
-            'body' => $request->body,
-            'completed' => $request->has('completed'),
-        ]);
+
+        $task->update(['body' => $request->body]);
+
+        if ($request->has('completed')) {
+            $task->complete();
+
+            $task->project->recordActivity('task_completed');
+        }
 
         return redirect()->back();
     }
