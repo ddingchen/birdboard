@@ -51,6 +51,20 @@ class ProjectTasksTest extends TestCase
 
         $attributes = [
             'body' => $this->faker->sentence,
+        ];
+
+        $this->signIn($project->owner)
+            ->patch($project->tasks[0]->path(), $attributes);
+
+        $this->assertDatabaseHas('tasks', $attributes);
+    }
+
+    public function test_a_task_can_be_completed()
+    {
+        $project = ProjectFactory::withTask()->create();
+
+        $attributes = [
+            'body' => $this->faker->sentence,
             'completed' => true,
         ];
 
@@ -58,6 +72,28 @@ class ProjectTasksTest extends TestCase
             ->patch($project->tasks[0]->path(), $attributes);
 
         $this->assertDatabaseHas('tasks', $attributes);
+    }
+
+    public function test_a_task_can_be_marked_as_imcompleted()
+    {
+        $project = ProjectFactory::withTask()->create();
+
+        $this->signIn($project->owner);
+
+        $this->patch($project->tasks[0]->path(), [
+            'body' => 'test',
+            'completed' => true,
+        ]);
+
+        $this->patch($project->tasks[0]->path(), [
+            'body' => 'test',
+            'completed' => false,
+        ]);
+
+        $this->assertDatabaseHas('tasks', [
+            'body' => 'test',
+            'completed' => false,
+        ]);
     }
 
     public function test_only_the_owner_of_a_project_can_update_tasks()

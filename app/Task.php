@@ -44,4 +44,10 @@ class Task extends Model
 
         $this->project->recordActivity('task_completed');
     }
+
+    public function imcomplete()
+    {
+        $this->completed = false;
+        $this->save();
+    }
 }
