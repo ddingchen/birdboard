@@ -15,18 +15,6 @@ class Task extends Model
         'completed' => 'boolean',
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::created(function ($task) {
-            Activity::create([
-                'project_id' => $task->project->id,
-                'description' => 'task_created',
-            ]);
-        });
-    }
-
     public function project()
     {
         return $this->belongsTo(Project::class);
@@ -49,5 +37,7 @@ class Task extends Model
     {
         $this->completed = false;
         $this->save();
+
+        $this->project->recordActivity('task_imcompleted');
     }
 }
