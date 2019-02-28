@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Activity;
 use App\Project;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,6 +21,19 @@ class Task extends Model
         return $this->belongsTo(Project::class);
     }
 
+    public function activities()
+    {
+        return $this->morphMany(Activity::class, 'subject')->latest();
+    }
+
+    public function recordActivity($description)
+    {
+        $this->activities()->create([
+            'description' => $description,
+            'project_id' => $this->project_id,
+        ]);
+    }
+
     public function path()
     {
         return $this->project->path() . '/tasks/' . $this->id;
@@ -30,7 +44,7 @@ class Task extends Model
         $this->completed = true;
         $this->save();
 
-        $this->project->recordActivity('task_completed');
+        $this->recordActivity('task_completed');
     }
 
     public function imcomplete()
@@ -38,6 +52,6 @@ class Task extends Model
         $this->completed = false;
         $this->save();
 
-        $this->project->recordActivity('task_imcompleted');
+        $this->recordActivity('task_imcompleted');
     }
 }

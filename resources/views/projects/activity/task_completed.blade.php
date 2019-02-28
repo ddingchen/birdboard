@@ -1,1 +1,1 @@
-You imcomplete a task.
+You complete a task.

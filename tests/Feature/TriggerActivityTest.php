@@ -31,9 +31,12 @@ class TriggerActivityTest extends TestCase
     {
         $project = ProjectFactory::create();
 
-        $project->addTask('new task');
+        $task = $project->addTask('new task');
 
-        $this->assertCount(2, $project->activities);
+        tap($project->activities->last(), function ($activity) use ($task) {
+            $this->assertEquals('task_created', $activity->description);
+            $this->assertEquals($task->body, $activity->subject->body);
+        });
     }
 
     public function test_completing_a_task()
@@ -43,7 +46,10 @@ class TriggerActivityTest extends TestCase
 
         $task->complete();
 
-        $this->assertCount(3, $project->activities);
+        tap($project->activities->last(), function ($activity) use ($task) {
+            $this->assertEquals('task_completed', $activity->description);
+            $this->assertEquals($task->body, $activity->subject->body);
+        });
     }
 
     public function test_imcompleting_a_task()
@@ -56,7 +62,11 @@ class TriggerActivityTest extends TestCase
 
         $task->imcomplete();
         $this->assertCount(4, $project->fresh()->activities);
-        $this->assertEquals('task_imcompleted', $project->fresh()->activities->last()->description);
+
+        tap($project->fresh()->activities->last(), function ($activity) use ($task) {
+            $this->assertEquals('task_imcompleted', $activity->description);
+            $this->assertEquals($task->body, $activity->subject->body);
+        });
     }
 
     public function test_deleting_a_task()
