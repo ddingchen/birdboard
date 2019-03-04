@@ -2,16 +2,16 @@
 
 namespace App;
 
-use App\Activity;
 use App\Task;
+use App\Traits\RecordActivity;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
-    protected $guarded = [];
+    use RecordActivity;
 
-    public $old = [];
+    protected $guarded = [];
 
     public function path()
     {
@@ -36,16 +36,5 @@ class Project extends Model
     public function addTask($body)
     {
         return $this->tasks()->create(compact('body'));
-    }
-
-    public function recordActivity($description)
-    {
-        $this->activities()->create([
-            'description' => $description,
-            'changes' => $this->wasChanged() ? [
-                'before' => array_diff($this->old, $this->getAttributes()),
-                'after' => $this->getChanges(),
-            ] : null,
-        ]);
     }
 }
