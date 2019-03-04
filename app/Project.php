@@ -43,7 +43,7 @@ class Project extends Model
         $this->activities()->create([
             'description' => $description,
             'changes' => $this->wasChanged() ? [
-                'before' => array_diff($this->old, $this->toArray()),
+                'before' => array_diff($this->old, $this->getAttributes()),
                 'after' => $this->getChanges(),
             ] : null,
         ]);
