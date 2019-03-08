@@ -1,1 +1,1 @@
-You created a task.
+{{ $activity->user->name }} created a task.

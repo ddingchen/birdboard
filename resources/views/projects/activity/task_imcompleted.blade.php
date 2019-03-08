@@ -1,1 +1,1 @@
-You imcomplete a task.
+{{ $activity->user->name }} imcomplete a task.

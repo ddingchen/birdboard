@@ -1,1 +1,1 @@
-You create a project.
+{{ $activity->user->name }} create a project.

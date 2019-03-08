@@ -34,4 +34,10 @@ class ProjectFactory
 
         return $this;
     }
+
+    public function ownedBy($user)
+    {
+        $this->owner = $user;
+        return $this;
+    }
 }

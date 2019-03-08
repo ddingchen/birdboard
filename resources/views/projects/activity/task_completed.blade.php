@@ -1,1 +1,1 @@
-You complete a task.
+{{ $activity->user->name }} complete a task.
