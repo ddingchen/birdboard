@@ -111,6 +111,28 @@ class ManageProjectTest extends TestCase
             ->assertStatus(403);
     }
 
+    public function test_a_user_can_delete_a_project()
+    {
+        $project = ProjectFactory::create();
+
+        $this->signIn($project->owner)
+            ->delete($project->path())
+            ->assertRedirect('projects')
+            ->assertDontSee($project->title);
+    }
+
+    public function test_unauthenticate_users_cannot_delete_projects()
+    {
+        $project = ProjectFactory::create();
+
+        $this->delete($project->path())
+            ->assertRedirect('login');
+
+        $this->signIn()
+            ->delete($project->path())
+            ->assertStatus(403);
+    }
+
     public function test_guests_may_not_manage_projects()
     {
         $this->get('projects')->assertRedirect('login');
