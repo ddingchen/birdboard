@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Project;
+use App\User;
 use Facades\Tests\Setup\ProjectFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -131,6 +132,17 @@ class ManageProjectTest extends TestCase
         $this->signIn()
             ->delete($project->path())
             ->assertStatus(403);
+    }
+
+    public function test_a_user_can_see_all_projects_they_have_invited_to_on_dashboard()
+    {
+        $user = factory(User::class)->create();
+
+        $project = tap(ProjectFactory::create())->invite($user);
+
+        $this->signIn($user)
+            ->get('projects')
+            ->assertSee($project->title);
     }
 
     public function test_guests_may_not_manage_projects()
