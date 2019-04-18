@@ -51,18 +51,16 @@
                     </form>
                 </div>
 
-                @if($errors->any())
-                    <ul class="mt-3 text-red">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                @endif
+                @include('errors')
             </div>
             <div class="lg:w-1/4 px-3">
                 @include('projects.card')
 
                 @include('projects.activity.card')
+
+                @can('manage', $project)
+                    @include('projects.invitation')
+                @endcan
             </div>
         </div>
     </main>
