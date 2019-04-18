@@ -15,23 +15,15 @@ class ManageProjectTest extends TestCase
 
     public function test_a_user_can_create_a_project()
     {
-        $this->withoutExceptionHandling();
-
         $this->signIn();
 
         $this->get('projects/create')->assertStatus(200);
 
-        $attributes = [
-            'title' => $this->faker->sentence,
-            'description' => $this->faker->sentence,
-            'notes' => $this->faker->sentence,
-        ];
-
-        $this->post('projects', $attributes)->assertRedirect();
-
-        $this->assertDatabaseHas('projects', $attributes);
-
-        $this->get('/projects')->assertSee($attributes['title']);
+        $this->followingRedirects()
+            ->post('projects', $attributes = factory(Project::class)->raw())
+            ->assertSee($attributes['title'])
+            ->assertSee($attributes['description'])
+            ->assertSee($attributes['notes']);
     }
 
     public function test_a_project_requires_a_title()
@@ -125,13 +117,14 @@ class ManageProjectTest extends TestCase
     public function test_unauthenticate_users_cannot_delete_projects()
     {
         $project = ProjectFactory::create();
+        $user = factory(User::class)->create();
 
-        $this->delete($project->path())
-            ->assertRedirect('login');
+        $this->delete($project->path())->assertRedirect('/login');
 
-        $this->signIn()
-            ->delete($project->path())
-            ->assertStatus(403);
+        $this->signIn($user)->delete($project->path())->assertStatus(403);
+
+        $project->invite($user);
+        $this->signIn($user)->delete($project->path())->assertStatus(403);
     }
 
     public function test_a_user_can_see_all_projects_they_have_invited_to_on_dashboard()
